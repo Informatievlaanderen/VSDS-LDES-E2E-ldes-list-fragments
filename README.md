@@ -8,14 +8,12 @@ The tool can be run as a Docker container, using a pre-built container or after 
 
 To create a Docker image, run the following command:
 ```bash
-docker build --tag vsds/ldes-list-fragments .
+docker build --tag vsds/ldes-list-fragments:latest .
 ```
 
 To run the Docker image mapped and follow an LDES view, you can run it interactively, e.g.:
 ```bash
-docker run --rm -it \
--e FOLLOW=https://gtfs.smartdataspace.dev-vlaanderen.be/connections/by-stop-and-time \
-vsds/ldes-list-fragments:latest
+docker run --rm -it -e FOLLOW=hhttps://ldes.telraam-api.net/observations/by-page vsds/ldes-list-fragments:latest
 ```
 > **Note**: this is a large data set so you may want to interrupt the container with `CTRL-C`.
 
@@ -42,7 +40,6 @@ The tool takes the following command line arguments:
 
 You can run the tool providing the mandatory view URL (and one or more optional arguments) after building it, e.g.:
 ```bash
-node dist/index.js  --silent false --mime-type "text/turtle" --poll-interval 30000 \
---follow https://gtfs.smartdataspace.dev-vlaanderen.be/connections/by-stop-and-time
+node dist/index.js  --silent false --mime-type "text/turtle" --poll-interval 30000 --follow https://ldes.telraam-api.net/observations/by-page
 ```
 > **Note**: again, this is a large data set so you may want to interrupt the tool with `CTRL-C`.

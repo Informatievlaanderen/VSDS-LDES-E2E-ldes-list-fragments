@@ -1,7 +1,7 @@
 # build environment
-FROM node:18-bullseye-slim AS builder
+FROM node:22-bullseye-slim AS builder
 # fix vulnerabilities
-ARG NPM_TAG=9.6.4
+ARG NPM_TAG=11.0.0
 RUN npm install -g npm@${NPM_TAG}
 # build it
 WORKDIR /build
@@ -10,7 +10,7 @@ RUN npm ci
 RUN npm run build
 
 # run environment
-FROM node:18.16.0-bullseye-slim
+FROM node:22.12.0-bullseye-slim
 # fix vulnerabilities
 # note: trivy insists this to be on the same RUN line
 RUN apt-get -y update && apt-get -y upgrade
@@ -34,7 +34,7 @@ ENTRYPOINT ["/usr/bin/dumb-init", "--"]
 # fix vulnerabilities
 RUN npm install -g npm@${NPM_TAG}
 # install dependancies
-ENV NODE_ENV production
+ENV NODE_ENV=production
 RUN npm ci --omit=dev
 USER node
 CMD ["sh", "-c", "node ./index.js --silent=${SILENT} --mime-type=${MIME_TYPE} --poll-interval=${POLL_INTERVAL} --follow=${FOLLOW}"]
