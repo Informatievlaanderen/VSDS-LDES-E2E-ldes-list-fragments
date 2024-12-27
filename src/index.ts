@@ -2,8 +2,8 @@ import minimist from 'minimist';
 import { Parser, Store } from 'n3';
 import fetch from 'node-fetch';
 import {SortedQueue} from 'sorted-queue';
-// import CacheControl from 'cache-control-parser';
-// const { parse } = CacheControl;
+import CacheControl from 'cache-control-parser';
+const { parse } = CacheControl;
 
 const args = minimist(process.argv.slice(2));
 const silent: boolean = (/true/i).test(args['silent'] || 'true');
@@ -31,20 +31,17 @@ async function visit(url: string, queue: SortedQueue<TimedUrl>, visited: {[key: 
   }
 
   const headers = response.headers;
-  // const cacheControl = parse(headers.get('cache-control') || '');
-  // const ttl = cacheControl["s-maxage"] ?? cacheControl["max-age"] ?? 0;
-  // const expires = new Date(Date.now() + ttl * 1000);
+  const cacheControl = parse(headers.get('cache-control') || '');
+  const ttl = cacheControl["s-maxage"] ?? cacheControl["max-age"] ?? 0;
+  const expires = new Date(Date.now() + ttl * 1000);
 
   const parser = new Parser({ format: headers.get('content-type') || '' });
   const body = await response.text();
   const model = new Store(parser.parse(body));
   
-  const fragmentId = model.getSubjects(null, 'https://w3id.org/tree#Node', null).shift()?.value;
+  const fragmentId = model.getSubjects(null, 'https://w3id.org/tree#Node', '').shift()?.value;
   if (fragmentId)
   {
-    const memberCount = model.getObjects(null, 'https://w3id.org/tree#member', null).length;
-    if (memberCount > 0) return; // it's a data node
-
     if (!visited[fragmentId]) console.info(fragmentId);
     visited[fragmentId] = true;
 
@@ -52,7 +49,7 @@ async function visit(url: string, queue: SortedQueue<TimedUrl>, visited: {[key: 
     const unvisited = relations.filter(x => !visited[x]);
     unvisited.forEach(x => queue.push({at: undefined, url: x}));
 
-    // if (!cacheControl.immutable) queue.push({at: expires, url: fragmentId});
+    if (!cacheControl.immutable) queue.push({at: expires, url: fragmentId});
   }
 }
 
