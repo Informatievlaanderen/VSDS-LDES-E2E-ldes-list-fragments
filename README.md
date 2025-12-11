@@ -1,4 +1,13 @@
 # List LDES Fragments
+
+> ⚠️ **Warning!**
+>
+> **This page has been archived. All documentation, source code, Docker images, and release information for the LDES software have been moved to the open-source project at [openldes.org](https://openldes.org).**
+>
+> **This page was originally created for the completed VSDS project, funded under the European Recovery and Resilience Facility (RRF) as part of NextGenerationEU and aligned with EU digital transformation strategies.**
+>
+> You can find the new source code at: https://github.com/orgs/OpenLDES/repositories 
+
 This small tool allows to follow an LDES view and all of its related fragments and list them to the console output. This allows to verify which fragments an LDES view currently contains as well as follow the LDES view for new fragments.
 
 The tool makes a HTTP(S) request to retrieve the view (first fragment). It determines the fragment ID and sends it to the console output. Then, it searches the fragment for all related fragments and schedules each fragment for retrieval (unless already retrieved). If a fragment is marked as expiring (`Cache-Control` header contains a `(s-)max-age` and is not marked as `immutable`) it is re-requested after the expiration time.
